@@ -1,3 +1,5 @@
+#define _CRT_SECURE_NO_WARNINGS
+
 #include	<winsock2.h> /*소켓 통신에 필요한 함수들이 선언되어있는 헤더파일 */
 #include	<stdio.h>
 #include    <conio.h>
@@ -6,7 +8,7 @@
 #pragma comment(lib, "ws2_32.lib")	/* 윈도우 소켓 함수가 정의되어있다. */
 #define BUFFER_SIZE 100  /* 100 바이트 */
 
-char exchange(char *fromClient, char *toClient);
+char exchange(char* fromClient, char* toClient);
 
 int main() {
 
@@ -94,7 +96,7 @@ int main() {
 		  struct 소켓의 IP와 PORT에 관한 정보를 저장하고 있는 SOCKADDR_IN 구조체의 포인터
 		  int    SOCKADDR_IN 구조체의 길이
    */
-	if (bind(serverSocket, (SOCKADDR *)&serverAddress,
+	if (bind(serverSocket, (SOCKADDR*)&serverAddress,
 		sizeof(serverAddress)) == SOCKET_ERROR)
 	{
 		printf("serverSocket에 IP 와 PORT 를 부여 하는데 실패했습니다!!!\n");
@@ -149,10 +151,29 @@ int main() {
 	recv(socket, fromClient, BUFFER_SIZE, 0);
 	/*fromClient 에 저장된 내용을 출력합니다.*/
 	printf("클라이언트로 부터 전달받은 데이터: %s\n\n", fromClient);
-	char toClient[BUFFER_SIZE]; //클라이언트로 전달할 내용을 저장할 배열
+	char c;
+	char filename[100];
+	int index = 0;
+	
+	for (int i = 0; fromClient[i] != '\0' && fromClient[i] != ' '; ++i) {
+		filename[index++] = fromClient[i];
+	}
+	filename[index] = '\0';
 
-	char len[1];
-	len[0] = exchange(fromClient, toClient); //소문자를 대문자로 바꾸는 함수
+	char output[100];
+	int start = 0;
+	int shiftValue = 3; // 학번 끝자리
+	
+	
+	for (int i = index+1; fromClient[i] != '\0'; i++) {
+		output[start++] = fromClient[i] + shiftValue;
+	}
+	output[start] = '\0';
+
+	FILE* fp = fopen(filename, "w");
+	fprintf(fp, "%s", output);
+	fclose(fp);
+
 
 	/*toClient 배열에 저장된 내용을 클라이언트로 전달합니다.*/
 
@@ -165,10 +186,8 @@ int main() {
 		   int    보낼 데이터의 크기
 		   int    데이터를 보낼 때의 옵셥으로 대부분 0으로 설정 )
 		 */
-	send(socket, len, sizeof(char), 0);
-	send(socket, toClient, len[0], 0);
-	printf("클라이언트로 전달한 메세지 : %s\n", toClient);
-	printf("클라이언트로 전달한 메세지 길이 : %d\n\n", len[0]);
+	send(socket, output, strlen(output) + 1, 0);
+	printf("클라이언트로 전달한 메세지 : %s\n", output);
 
 	_getch();
 
@@ -181,7 +200,7 @@ int main() {
 	return 1;
 }
 
-char exchange(char *fromClient, char *toClient) {
+char exchange(char* fromClient, char* toClient) {
 	int i;
 	char num = 0;
 

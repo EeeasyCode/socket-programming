@@ -1,9 +1,10 @@
 #define _WINSOCK_DEPRECATED_NO_WARNINGS 
+#define _CRT_SECURE_NO_WARNINGS
 
 #include <stdio.h>
 #include <winsock2.h>
 #include <conio.h>
-
+#include <string.h>
 #pragma comment(lib, "wsock32.lib")
 #pragma comment(lib, "ws2_32.lib")
 #define BUFFER_SIZE 100
@@ -52,20 +53,34 @@ int main(void) {
 	printf("127.0.0.1의 10000번 포트에 접속을 성공하였습니다.\n\n");
 
 	char toServer[BUFFER_SIZE];
-	printf("서버로 보낼 메세지 : ");
-	gets_s(toServer);	// 키보드로 부터 문장을 입력 받아 toServer 배열에 넣는다.
-	send(s, toServer, strlen(toServer) + 1, 0);	// s라는 소켓에 toServer 배열의 내용을 strlen(toServer)+1 길이만큼 보낸다.
+	char textfile[40];
+	char filetext[BUFFER_SIZE] = "";
+	char s2[10] = ".txt";
+	char space[] = " ";
 
+	printf("open할 파일명 : ");
+	gets_s(textfile, 40);	// 키보드로 부터 문장을 입력 받아 toServer 배열에 넣는다.
+	strcat(textfile, s2);
+	FILE* fp; // 파일  
+	fp = fopen(textfile, "rb");
+	if (fp == NULL) {
+		printf(textfile);
+		printf("Cannot open this file. \n");
+		return 1;
+	}
+	strcat(textfile, space);
+	fscanf(fp, "%s", toServer);
+	strcat(filetext, textfile);
+	strcat(filetext, toServer);
+	fclose(fp);
+
+	send(s, filetext, strlen(filetext) + 1, 0);	// s라는 소켓에 toServer 배열의 내용을 strlen(toServer)+1 길이만큼 보낸다.
+	
 	char len[1];	// 서버로 부터 받게 될 메세지의 길이를 대입할 배열이다.
 	char fromServer[BUFFER_SIZE + 1];
-	recv(s, len, sizeof(char), 0);
-	recv(s, fromServer, len[0], 0);
-	printf("\n서버로 부터 받은 메세지 : ");
-	for (int j = 0; j < len[0]; j++) {
-		printf("%c", fromServer[j]);
-	}
-	printf("\n서버로 부터 받은 메세지 길이: %d\n", len[0]);
-
+	recv(s, fromServer, BUFFER_SIZE, 0);
+	printf("\n서버로 부터 받은 메세지 : %s\n\n", fromServer);
+	
 	_getch();
 
 	printf("\n\n서버와의 접속을 종료 했습니다.\n");
