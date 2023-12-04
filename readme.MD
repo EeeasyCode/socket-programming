@@ -2,9 +2,14 @@
 
 ## OS 구조
 User - Kernel - HW
-user mode, kernel mode, hardware mode로 나누어 진다. 사용자가 어떤 프로그램을 만들어서 process를 실행하면 해당 process가 실행되기 위해서는 cpu와 같은 하드웨어에 직접 접근하지 않는다. 'System call' 이라는 인터페이스를 통해 user mode에서 kernel 모드로 넘어가면서 device driver를 제어하기 시작한다. 즉 응용 프로그램이 하드웨어 자원에 접근하거나 OS가 제공하는 서비스를 이용하려할 때는 system call을 이용해야 하며, 이렇게 함으로써 컴퓨터 자원을 보호할 수 있게 된다. kernel mode와 hardware mode 사이의 인터페이스는 driver가 담당한다. 이때 device driver가 IRQ를 통해 인터럽트를 요청하면서 원하는 장치를 사용하면서 연산을 시작하고 본인의 작업(위의 프로세스)이 끝나면 return하게 된다.
+사용자가 어떤 프로그램을 만들어서 process를 실행하면 해당 process가 실행되기 위해서는 cpu와 같은 하드웨어에 직접 접근하지 않음. 
+'System call' 이라는 인터페이스를 통해 user mode에서 kernel 모드로 넘어가면서 device driver를 제어하기 시작함. 
+즉, 응용 프로그램이 하드웨어 자원에 접근하거나 OS가 제공하는 서비스를 이용하려할 때는 system call을 이용해야 하며, 이렇게 함으로써 컴퓨터 자원을 보호할 수 있음. 
+kernel mode와 hardware mode 사이의 인터페이스는 driver가 담당함. 
+이때 device driver가 IRQ를 통해 인터럽트를 요청하면서 원하는 장치를 사용하면서 연산을 시작하고 본인의 작업(위의 프로세스)이 끝나면 return함.
 
-드라이버 는 운영 체제와 디바이스가 서로 통신할 수 있는 소프트웨어 구성 요소
+드라이버: 운영 체제와 디바이스가 서로 통신할 수 있는 소프트웨어 구성 요소
+IRQ: 인터럽트 요청
 
 ## File
 유저모드 어플리케이션이 커널에 진입할 수 있도록 추상화된 인터페이스가 파일이다. 유저모드에서 커널모드에 진입할 수 있는 유일한 수단이다. 
